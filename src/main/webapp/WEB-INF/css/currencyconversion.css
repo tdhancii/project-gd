@@ -1,0 +1,97 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #4f6b72;
+	background: #E6EAE9;
+}
+body
+{
+   scrollbar-face-color:#b7dfff;
+   scrollbar-arrow-color:#274d71;
+   scrollbar-track-color:#e4f1f7;
+   scrollbar-shadow-color:#e0f6f4;
+   scrollbar-highlight-color:#d8f3ff;
+   scrollbar-3dlight-color:#335970;
+   scrollbar-darkshadow-Color:#335970;
+}
+html
+{
+   scrollbar-face-color:#b7dfff;
+   scrollbar-arrow-color:#274d71;
+   scrollbar-track-color:#e4f1f7;
+   scrollbar-shadow-color:#e0f6f4;
+   scrollbar-highlight-color:#d8f3ff;
+   scrollbar-3dlight-color:#335970;
+ 
+ scrollbar-darkshadow-Color:#335970;
+}
+A:link			{color: #003366 ; text-decoration: none; }
+A:hover{
+	/*color: #003366 ;
+	font-weight: bold; 
+	font-variant: small-caps;
+	font-size: medium;
+	font-family: cursive;*/
+}
+A:visited		{color: #003366 ; text-decoration: none; }
+A:active		{
+	color: white ; 
+	font-weight: bold; 
+}
+
+/* Topo */
+.menu1			{height: 20; color: #444466; font-family: Verdana,Arial,Helvetica,sans-serif;; font-size: 6pt; text-decoration: none; }
+.menumy{
+	color:#01A7E9;
+font-size:105%;
+font-weight:bold;
+line-height:16px;
+padding-left:5px;
+text-decoration:none;
+	}
+.menu1			{height: 20;  font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 6pt; font-weight: bold; text-decoration: none; color: #00A4E8 ; }
+.sidemenuheader			{ 
+	vertical-align:middle;
+	font: Verdana Bold;
+	tamanho:12px;
+	color: #003366;
+	background-color:00b0f0;
+	color:#FFF;
+	font-family:Myriad Pro,Trebuchet MS, Verdana,Arial,Helvetica,sans-serif;
+	font-size:12px;
+	font-weight:bold; 
+}
+.sidemenu			{ 
+	font: Verdana Bold;
+	tamanho:10px;
+	color: #003366;
+	font-family:tahoma,sans-serif,Helvetica,Verdana,Arial;
+	font-size:12px;
+	font-weight: normal;
+	font-variant: small-caps;
+}
+.sidemenu0{ 
+	tamanho:11px;
+	color: #000000;
+	font-weight:bold;
+	font-size:11px;
+	font-family: Verdana;
+}
+
+.button1 {
+	border:1px outset;
+	cursor:pointer;
+	font-family:Arial, Helvetica, sans-serif;  
+	font-size:11px;
+	color:#07567e;
+	font-weight:bold;
+	margin:0px 0px 0px 1px;
+	padding:1px 1px 1px 1px;
+	background-image: url(images/buttonbg.gif);
+	background-repeat:repeat-x;
+}
+
+.txt-bluedk {
+		color: #2364a4;
+	}
