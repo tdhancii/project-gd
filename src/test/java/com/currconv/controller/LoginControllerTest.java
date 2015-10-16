@@ -1,102 +1,117 @@
 package com.currconv.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.currconv.bean.LoginBean;
 import com.currconv.delegate.UserDelegate;
 import com.currconv.dto.UserDTO;
 import com.currconv.exception.AuthenticationFailureException;
 import com.currconv.exception.InvalidUserException;
+import com.currconv.spring.BaseConfiguration;
+import com.currconv.spring.WebConfiguration;
+import com.currconv.test.util.ApplicationObjectBuilder;
 
-@Controller
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@SpringApplicationConfiguration(classes={WebConfiguration.class,BaseConfiguration.class})
+@EnableAutoConfiguration(exclude = { VelocityAutoConfiguration.class })
 public class LoginControllerTest {
-    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Mock
-    private UserDelegate userDelegate;
-    
-    //@Before
-    public void setup(){
-	
+    private UserDelegate userDelegateMock;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+	MockitoAnnotations.initMocks(this);
+	mockMvc = MockMvcBuilders.standaloneSetup(new LoginController()).build();
     }
 
-    /**
-     * 1. Check if the existence of a User Session and navigate to Convert screen.
-     * 2. Check if there is no User Session and navigate to Login Screen for first time.
-     * 3. Check if there is no User Session and User has Registered to display the message.
-     */
-    @RequestMapping(value = { "/", "login" }, method = RequestMethod.GET)
-    public String displayLogin(HttpServletRequest request, ModelAndView model,
-	    @ModelAttribute("loginBean") LoginBean loginBean) {
+    @Test
+    public void displayLoginNewUserSessionTest() throws Exception {
 
-	UserDTO loggedInUserDTO = (UserDTO) request.getSession().getAttribute("user");
-	if (loggedInUserDTO == null) {
-	    model.addObject("loginBean", loginBean);
-	    request.setAttribute("loginMessage", request.getSession().getAttribute("registrationMessage"));
-	    return "login";
-	}
-	return "redirect:/convert";
+	MockHttpSession session = new MockHttpSession();
+	session.setAttribute("user", null);
+	mockMvc.perform((get("/")).session(session).requestAttr("loginMessage", "")).andExpect(status().isOk())
+		.andExpect(view().name("login")).andExpect(forwardedUrl("login"));
     }
 
-    /**
-     * 1. Binding result errors - navigation back to Login or to Convert
-     * 2. Invalid User Exception testing - navigation and login message should be tested
-     * 3. Authentication Failure Exception testing - navigation and login message should be tested
-     * @param request
-     * @param response
-     * @param loginBean
-     * @return
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String executeLogin(HttpServletRequest request, @Valid @ModelAttribute("loginBean") LoginBean loginBean,
-	    BindingResult bindingResult) {
+    @Test
+    public void displayLoginExistingUserSessionTest() throws Exception {
 
-	if (!bindingResult.hasErrors()) {
-	    try {
-		UserDTO userDTO = userDelegate.authenticateUser(loginBean.getEmail(), loginBean.getPassword());
-		request.getSession().setAttribute("user", userDTO);
-		logger.info("Successful login ");
-		return "redirect:/convert";
-	    } catch (InvalidUserException e) {
-		request.setAttribute("loginMessage", "User does not exist. Kindly register to access the system.");
-		return "login";
-	    } catch (AuthenticationFailureException e) {
-		logger.error("Authentication Failure Exception occurred while executing login -> " + e.getMessage());
-		request.setAttribute("loginMessage", "Authentication Failure! ");
-		return "login";
-	    } catch (Exception e) {
-		logger.error("System Exception occurred while executing login -> " + e.getMessage());
-		request.setAttribute("loginMessage", "System Error occurred! Please visit us later! ");
-		return "login";
-	    }
-	}
-	return "login";
+	MockHttpSession session = new MockHttpSession();
+	session.setAttribute("user", ApplicationObjectBuilder.buildUserDTODummy());
+	mockMvc.perform((get("/")).session(session)).andExpect(status().isOk())
+		.andExpect(forwardedUrl("redirect:/convert"));
     }
 
-    /**
-     * 
-     * @param request
-     * @param response
-     * @param loginBean
-     * @return
-     */
-    @RequestMapping(value = "/logout")
-    public String executeLogout(HttpServletRequest request, @ModelAttribute("loginBean") LoginBean loginBean) {
-	request.getSession().removeAttribute("user");
-	request.getSession().removeAttribute("userNameData");
-	request.setAttribute("loginMessage", "You have successfully logged out");
-	logger.info("User has logged out successfully");
-	return "login";
+    @Test
+    public void executeLoginInvalidUserExceptionTest() throws Exception {
+	when(userDelegateMock.authenticateUser("abc-1@xyz.com", "123456"))
+		.thenThrow(new InvalidUserException("User does not exist"));
+
+	mockMvc.perform(post("/login")).andExpect(forwardedUrl("login")).andExpect(status().isOk()).andExpect(
+		request().attribute("loginMessage", "User does not exist. Kindly register to access the system."));
+    }
+
+    @Test
+    public void executeLoginAuthenticationFailureExceptionTest() throws Exception {
+	when(userDelegateMock.authenticateUser("abc-1@xyz.com", "123156"))
+		.thenThrow(new AuthenticationFailureException("Authentication Failure Occurred"));
+
+	mockMvc.perform(post("/login")).andExpect(forwardedUrl("login")).andExpect(status().isOk())
+		.andExpect(request().attribute("loginMessage", "Authentication Failure!"));
+    }
+
+    @Test
+    public void executeLoginSystemExceptionTest() throws Exception {
+	when(userDelegateMock.authenticateUser("abc-1@xyz.com", "123156"))
+		.thenThrow(new Exception("Authentication Failure Occurred"));
+
+	mockMvc.perform(post("/login")).andExpect(forwardedUrl("login")).andExpect(status().isOk())
+		.andExpect(request().attribute("loginMessage", "System Error occurred! Please visit us later!"));
+    }
+
+    @Test
+    public void executeSuccessfulLoginTest() throws Exception {
+	UserDTO userDTO = ApplicationObjectBuilder.buildUserDTODummy();
+	when(userDelegateMock.authenticateUser("abc-1@xyz.com", "123456")).thenReturn(userDTO);
+	MockHttpSession session = new MockHttpSession();
+
+	mockMvc.perform(post("/login").session(session)).andExpect(status().isOk())
+		.andExpect(request().sessionAttribute("user", userDTO)).andExpect(forwardedUrl("redirect:/convert"));
+    }
+
+    @Test
+    public void executeSuccessfulLogoutTest() throws Exception {
+	UserDTO userDTO = ApplicationObjectBuilder.buildUserDTODummy();
+	MockHttpSession session = new MockHttpSession();
+	session.setAttribute("user", userDTO);
+	session.setAttribute("userNameData", userDTO.getFirstName());
+	mockMvc.perform(post("/logout").session(session)).andExpect(status().isOk())
+		.andExpect(request().sessionAttribute("user", null))
+		.andExpect(request().sessionAttribute("userNameData", null))
+		.andExpect(request().attribute("loginMessage", "You have successfully logged out"))
+		.andExpect(forwardedUrl("redirect:/convert"));
     }
 }
