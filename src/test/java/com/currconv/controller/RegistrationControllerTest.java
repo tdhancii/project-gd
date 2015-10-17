@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -66,15 +67,11 @@ public class RegistrationControllerTest {
 	assertEquals(retValue, REGISTRATION);
     }
 
-    // TODO: @Test
+     @Test
     public void registerUserWithEmailAlreadyRegisteredExceptionShouldStayInRegistrationPage() throws Throwable {
 	when(request.getSession()).thenReturn(session);
 	when(bindingResult.hasErrors()).thenReturn(false);
-
-	UserDTO user = TestObjectBuilder.fixtureUserDTO();
-
-	doThrow(new EmailAlreadyRegisteredException(EMAIL_ALREADY_REGISTERED)).when(userDelegateMock)
-		.registerNewUser(user);
+	doThrow(new EmailAlreadyRegisteredException(EMAIL_ALREADY_REGISTERED)).when(userDelegateMock).registerNewUser(any(UserDTO.class));
 
 	RegistrationBean registrationBean = TestObjectBuilder.fixtureRegistrationBean();
 	String retValue = registrationController.registerUser(request, registrationBean, bindingResult);

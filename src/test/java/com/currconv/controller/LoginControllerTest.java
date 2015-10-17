@@ -57,9 +57,9 @@ public class LoginControllerTest {
     public void displayLoginWithoutUserShouldReturnLogin() {
 	when(request.getSession()).thenReturn(session);
 	when(session.getAttribute(USER_ATTRIBUTE)).thenReturn(null);
-
 	ModelAndView modelAndView = new ModelAndView();
 	LoginBean loginBean = new LoginBean();
+
 	String retValue = loginController.displayLogin(request, modelAndView, loginBean);
 
 	assertNull(request.getAttribute(LOGIN_MESSAGE_ATTRIBUTE));
@@ -75,6 +75,7 @@ public class LoginControllerTest {
 
 	ModelAndView modelAndView = new ModelAndView();
 	LoginBean loginBean = new LoginBean();
+	
 	String retValue = loginController.displayLogin(request, modelAndView, loginBean);
 
 	assertEquals(request.getAttribute(LOGIN_MESSAGE_ATTRIBUTE), REGISTRATION_MESSAGE);
@@ -86,9 +87,9 @@ public class LoginControllerTest {
     public void displayLoginWithUserShouldGotoConvertCurrency() {
 	when(request.getSession()).thenReturn(session);
 	when(session.getAttribute(USER_ATTRIBUTE)).thenReturn(TestObjectBuilder.fixtureUserDTO());
-
 	ModelAndView modelAndView = new ModelAndView();
 	LoginBean loginBean = new LoginBean();
+
 	String retValue = loginController.displayLogin(request, modelAndView, loginBean);
 
 	assertEquals(retValue, REDIRECT_CONVERT);
