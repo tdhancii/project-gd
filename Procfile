@@ -1,1 +1,1 @@
-web: java -jar curr-conv-app.jar
+web: java -jar target/curr-conv-app.war

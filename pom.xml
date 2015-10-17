@@ -15,7 +15,7 @@
 	</parent>
 
 	<build>
-		<finalName>curr-conv-app</finalName>
+		<finalName>curr-conv-app</finalName>		
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
