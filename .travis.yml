@@ -2,3 +2,4 @@ language: java
 deploy:
     provider: heroku
     api_key: 0fe0470d-ff40-48cb-bc17-2f920f635dc7
+    app: curr-con-app
