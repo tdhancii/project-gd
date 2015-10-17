@@ -254,11 +254,31 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${slf4j.version}</version>
+      </dependency>
+      <!-- Since slf4j is a bridge, you need an implementation of it that would 
+      redirect all calls to slf4j or JCL. Following is to perform logging using 
+      the basic implementation, choose your preferred implementation 
+      (it seems you were using logback). -->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+         <version>${slf4j.version}</version>
+         <scope>runtime</scope>
+      </dependency>
 
 	</dependencies>
 
 	<properties>
 		<java.version>1.7</java.version>
+		<slf4j.version>1.5.6</slf4j.version>
 	</properties>
 </project>
