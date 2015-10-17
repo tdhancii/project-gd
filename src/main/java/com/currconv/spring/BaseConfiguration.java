@@ -22,7 +22,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
+/**
+ * This is the base configuration class for the application
+ * @author gauravD
+ *
+ */
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.currconv")
 @Configuration

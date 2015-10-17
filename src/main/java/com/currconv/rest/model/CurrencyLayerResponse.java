@@ -3,7 +3,11 @@ package com.currconv.rest.model;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+/**
+ * Model built for Rest invocation
+ * @author dalalgau
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrencyLayerResponse {
 

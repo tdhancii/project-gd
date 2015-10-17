@@ -1,5 +1,10 @@
 package com.currconv.exception;
 
+/**
+ * Exception class to correpond to Authentication Failure scenario.
+ * @author gauravD
+ *
+ */
 public class AuthenticationFailureException extends Exception {
 	/**
 	 * 

@@ -20,6 +20,11 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Entity object to map to the APPLICATION_USER table of the database.
+ * @author gauravD
+ *
+ */
 @Entity
 @Table(name = "APPLICATION_USER")
 public class User implements Serializable {

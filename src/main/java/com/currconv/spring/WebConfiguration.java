@@ -17,7 +17,11 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
-
+/**
+ * This is the Web Configuration class for the application
+ * @author gauravD
+ *
+ */
 @EnableWebMvc
 @ComponentScan(basePackages = { "com.currconv" })
 @Configuration

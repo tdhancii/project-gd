@@ -11,7 +11,7 @@
 		<form:form id="loginForm" method="post" action="login" modelAttribute="loginBean">
 		
 		<div style="border: 1px;border-color:#00F;" align="center">
-			<font color="red" ><core:out value="${loginMessage}"/></font>
+			<font color="red" ><spring:message code="${loginMessage}" text="${loginMessage}"/></font>
 			
 			<center><h3 class="txt-bluedk"><strong>Welcome to the Currency Conversion Centre</strong></h3></center>
 			<center><hr color="#1874CD" width="50%"/></center>

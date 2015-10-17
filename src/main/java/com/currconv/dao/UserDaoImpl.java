@@ -12,15 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.currconv.entity.User;
 
+/**
+ * Implementation class for Application User data access object
+ */
 @Repository
 @Transactional
 public class UserDaoImpl implements UserDao {
-
+    	/*Logger for printing log messages*/
 	Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 
+	/*Entity Manager reference*/
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	/**
+	 * This method is used to search for an existing user using the emailID.
+	 */
 	@SuppressWarnings("unchecked")
 	public User findByEmailID(String emailID) {
 	    
@@ -36,6 +43,9 @@ public class UserDaoImpl implements UserDao {
 
 	}
 
+	/**
+	 * This method is used to persist the Application User to the database.
+	 */
 	public void save(User user) {
 		entityManager.persist(user);
 		log.debug("The User has been saved"+ user.getEmailID());

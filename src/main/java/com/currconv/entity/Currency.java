@@ -7,6 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Entity object to map to the CURRENCY table of the database.
+ * @author gauravD
+ *
+ */
 @Entity
 @Table(name="CURRENCY")
 public class Currency implements Serializable {

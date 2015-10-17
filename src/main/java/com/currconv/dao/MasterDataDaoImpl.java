@@ -14,18 +14,23 @@ import com.currconv.entity.Country;
 import com.currconv.entity.Currency;
 import com.currconv.exception.DataException;
 
+
 /**
- * 
+ *Implementation class for Master data Data Access Object 
  */
 @Repository
 @Transactional
 public class MasterDataDaoImpl implements MasterDataDao {
-
+    	/*Logger for printing log messages*/
 	Logger log = LoggerFactory.getLogger(MasterDataDaoImpl.class);
 
+	/*Entity Manager reference*/
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	/**
+	 * This method fetches the list of countries configured in the application.
+	 */
 	@Override
 	public List<Country> retrieveCountryList() throws DataException{
 		@SuppressWarnings("unchecked")
@@ -33,6 +38,9 @@ public class MasterDataDaoImpl implements MasterDataDao {
 		return countryList;
 	}
 
+	/**
+	 * This method fetches the list of currencies configured in the application.
+	 */
 	@Override
 	public List<Currency> retrieveCurrencyList() throws DataException{
 		@SuppressWarnings("unchecked")

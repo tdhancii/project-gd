@@ -1,14 +1,19 @@
 package com.currconv.exception;
 
-public class DataException extends Throwable {
+/**
+ * This corresponds to exception thrown while fetching Master data.
+ * @author gauravD
+ *
+ */
+public class DataException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6521390273483087345L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6521390273483087345L;
 
-	public DataException(String message) {
-		super(message);
-	}
+    public DataException(String message) {
+	super(message);
+    }
 
 }

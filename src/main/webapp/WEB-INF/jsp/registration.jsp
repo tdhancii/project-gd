@@ -22,7 +22,7 @@
 		<form:form id="registrationForm" method="post" action="userRegister" modelAttribute="registrationBean">
 		
 		<div style="border: 10px;border-color:#00F;" align="center">
-			<font color="red" >${errorMessage}</font>		
+			<font color="red"><spring:message code="${errorMessage}" text="${errorMessage}" /></font>		
 			<center><h3 class="txt-bluedk"><strong>User Registration</strong></h3></center>
 			<center><hr color="#1874CD" width="50%"/></center>
 			<center><h5 class="txt-bluedk"><strong>Please enter your details to register</strong></h5></center>

@@ -1,14 +1,16 @@
 package com.currconv.exception;
 
+/**
+ * Exception class to correspond to Exceptions from Remote invocations.
+ * 
+ * @author gauravD
+ *
+ */
+@SuppressWarnings("serial")
 public class RemoteException extends Throwable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6546146435279827564L;
-
-	public RemoteException(String message) {
-		super(message);
-	}
+    public RemoteException(String message) {
+	super(message);
+    }
 
 }

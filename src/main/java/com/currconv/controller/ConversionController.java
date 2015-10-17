@@ -36,59 +36,106 @@ import com.currconv.dto.UserDTO;
 import com.currconv.exception.CurrencyConversionNotSupported;
 import com.currconv.exception.DataException;
 import com.currconv.exception.RemoteException;
-
+/**
+ * The controller which serves requests pertaining to the Currency Conversion screen
+ * @author dalalgau
+ *
+ */
 @Controller
 @RequestMapping(value = "/convert")
 public class ConversionController {
     Logger logger = LoggerFactory.getLogger(ConversionController.class);
 
+    /*Reference to the Currency Conversion Delegate*/
     @Autowired
     private CurrencyConversionDelegate conversionDelegate;
 
+    /*Reference to the User Delegate*/
     @Autowired
     private UserDelegate userDelegate;
 
+    /*Reference to the Master Delegate*/
     @Autowired
     private MasterDataDelegate masterDataDelegate;
 
+    /*Reference to hold Lists of currencies fetched from the database*/
     private List<CurrencyDTO> currencyList;
+    
+    /*Public static String references used in the class*/
     private static final String CURR_CONV_MESSAGE = "The value of {0} {1} is {2} {3} on {4}";
-
+    private static final String EXCEPTION_CODE_UNEXPECTED = "UNEXPECTED_SYSTEM_EXCEPTION_EXCEPTION";
+    private static final String EXCEPTION_NO_VALID_USER_SESSION = "NO_USER_ASSOCIATED_SESSION_EXCEPTION";
+    
+    private static final String USER_ATTRIBUTE = "user";
+    private static final String REDIRECT_LOGIN = "redirect:/login";
+    private static final String LOGIN_MESSAGE_ATTRIBUTE = "loginMessage";
+    private static final String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
+    private static final String CONVERSION_BEAN = "conversionBean";
+    private static final String USER_ACTIVITY_LIST_ATTRIBUTE = "userActivityList";
+    private static final String USER_NAME_DATA = "userNameData";
+    private static final String CURRENCY_LIST = "currencyList";
+    private static final String DATE_FORMAT = "dd/MM/yyyy";
+    
+    
     /**
+     * This method is responsible for loading the currency conversion screen.
+     * This method first checks for presence of a valid user in the session and redirects the user
+     * to either the Login screen (invalid users) or the Convert Currency screen.
      * 
      * @param request
      * @param conversionBean
-     * @param loginBean
      * @return
      * @throws Exception
      */
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView loadConvertCurrency(HttpServletRequest request, ModelAndView modelAndView, @ModelAttribute("conversionBean") ConversionBean conversionBean) throws Exception {
+    public ModelAndView loadConvertCurrency(HttpServletRequest request, ModelAndView modelAndView, @ModelAttribute(CONVERSION_BEAN) ConversionBean conversionBean) throws Exception {
 
-	UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
+	UserDTO userDTO = (UserDTO) request.getSession().getAttribute(USER_ATTRIBUTE);
 	if (userDTO == null) {
-	    logger.error("No user associated with the current session");
-	    modelAndView = new ModelAndView("redirect:/login");
-	    request.getSession().setAttribute("loginMessage", "No user associated with the current session! Please re-login");
+	    logger.error(EXCEPTION_NO_VALID_USER_SESSION);
+	    modelAndView = new ModelAndView(REDIRECT_LOGIN);
+	    request.getSession().setAttribute(LOGIN_MESSAGE_ATTRIBUTE, EXCEPTION_NO_VALID_USER_SESSION);
 	    return modelAndView;
 	}
-	modelAndView.addObject("conversionBean",conversionBean);
-	modelAndView.addObject("userActivityList", userDTO.getUserActivityList());
-	request.getSession().setAttribute("userNameData", userDTO.getFirstName() + " " + userDTO.getLastName());
+	modelAndView.addObject(CONVERSION_BEAN,conversionBean);
+	modelAndView.addObject(USER_ACTIVITY_LIST_ATTRIBUTE, userDTO.getUserActivityList());
+	request.getSession().setAttribute(USER_NAME_DATA, userDTO.getFirstName() + " " + userDTO.getLastName());
 	return modelAndView;
     }
 
 
+    /**
+     * This method is invoked from the Currency Conversion screen.
+     * 
+     * This method is responsible for fetch the currency rates for the From Currency - To Currency combination for the provided date
+     * and display to the user.
+     * This method initially checks for a valid user in the session. In absence of a valid user, the application gets navigated
+     * to the Login screen with an appropriate message.
+     * If the user is valid, the method checks for Binding errors (which are displayed to the user on the same screen) and then invokes 
+     * the Currency REST service via the Delegate.
+     * This method also, converts the Amount provided by the user and displays the result to the user.
+     * As a part of this action, the User Activity list also has to be updated.
+     * 
+     * CurrencyConversionException is thrown if the from-to currency conversion is not supported by the REST API.
+     * RemoteException is handled to cater to any exception thrown by the service.
+     * 
+     * @param request
+     * @param model
+     * @param conversionBean
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView convertCurrency(HttpServletRequest request, ModelAndView model,@Valid @ModelAttribute(value = "conversionBean") ConversionBean conversionBean, BindingResult bindingResult)
+    public ModelAndView convertCurrency(HttpServletRequest request, ModelAndView model,@Valid @ModelAttribute(value = CONVERSION_BEAN) ConversionBean conversionBean, BindingResult bindingResult)
 		    throws Exception {
 	
-	UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");	
+	UserDTO userDTO = (UserDTO) request.getSession().getAttribute(USER_ATTRIBUTE);	
 	
 	if (userDTO == null) {
 	    logger.warn("No user associated with session.");
-	    ModelAndView loginModel = new ModelAndView("redirect:/login");
-	    request.getSession().setAttribute("loginMessage", "System Error occurred!");
+	    ModelAndView loginModel = new ModelAndView(REDIRECT_LOGIN);
+	    request.getSession().setAttribute(LOGIN_MESSAGE_ATTRIBUTE, EXCEPTION_CODE_UNEXPECTED);
 	    return loginModel;
 	}
 	
@@ -96,8 +143,7 @@ public class ConversionController {
 	    try {
 		// Call the REST API through the Currency Conversion Service to get the currency rates.
 		BigDecimal converstionRate = this.conversionDelegate.retrieveCurrencyRates(conversionBean.getFromCurrency(),
-			conversionBean.getToCurrency(), conversionBean.getSourceAmount(),
-			conversionBean.getConversionDate());
+			conversionBean.getToCurrency(), conversionBean.getConversionDate());
 		
 		BigDecimal convertedAmount = conversionBean.getSourceAmount().multiply(converstionRate).setScale(2,RoundingMode.FLOOR);
 
@@ -113,17 +159,22 @@ public class ConversionController {
 
 	    } catch (CurrencyConversionNotSupported e) {
 		logger.error("Currency conversion exception " + e.getMessage());
-		request.setAttribute("errorMessage", e.getMessage());
+		request.setAttribute(ERROR_MESSAGE_ATTRIBUTE, e.getMessage());
 	    } catch (RemoteException e) {
 		logger.error("Remote exception from currency conversion service " + e.getMessage());
-		request.setAttribute("errorMessage", e.getMessage());
+		request.setAttribute(ERROR_MESSAGE_ATTRIBUTE, e.getMessage());
 	    }
 	}
-	model.addObject("userActivityList", userDTO.getUserActivityList());
+	model.addObject(USER_ACTIVITY_LIST_ATTRIBUTE, userDTO.getUserActivityList());
 	return model;
     }
     
-    @ModelAttribute("currencyList")
+    /**
+     * Maintain the currency list to be displayed to the end user.
+     * @return
+     * @throws DataException
+     */
+    @ModelAttribute(CURRENCY_LIST)
     public List<CurrencyDTO> populateCurrencyList() throws DataException {
 	try {
 	    if (currencyList == null || currencyList.isEmpty()) {
@@ -134,21 +185,37 @@ public class ConversionController {
 	}
 	return currencyList;
     }
-
+    
+    /**
+     * Used to handle Date and BigDecimal data types
+     * @param binder
+     */
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
-	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	dateFormat.setLenient(false);
 
 	binder.registerCustomEditor(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
     }
 
+    /**
+     * For Date formatting
+     * @param date
+     * @return
+     */
     private String formatDate(Date date) {
 	SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy");
 	return format.format(date);
     }
 
+    /**
+     * Utility method to build the User Activity DTO object.
+     * @param emailID
+     * @param convertedAmount
+     * @param conversionBean
+     * @return
+     */
     private UserActivityDTO constructUserActivityDTO(String emailID, BigDecimal convertedAmount,
 	    ConversionBean conversionBean) {
 	return new UserActivityDTO(emailID, conversionBean.getFromCurrency(), conversionBean.getToCurrency(),

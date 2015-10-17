@@ -15,6 +15,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * Entity object to map to the USER_ACTIVITY table of the database.
+ * @author gauravD
+ *
+ */
 @Entity
 @Table(name="USER_ACTIVITY")
 public class UserActivity implements Serializable{

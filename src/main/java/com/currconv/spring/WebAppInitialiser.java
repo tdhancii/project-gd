@@ -2,7 +2,11 @@ package com.currconv.spring;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-
+/**
+ * The Web Application Initializer class.
+ * @author gauravD
+ *
+ */
 public class WebAppInitialiser extends AbstractAnnotationConfigDispatcherServletInitializer {
 
   @Override

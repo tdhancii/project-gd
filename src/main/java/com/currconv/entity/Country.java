@@ -7,6 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Entity object to map to the COUNTRY table of the database.
+ * @author gauravD
+ *
+ */
 @Entity
 @Table(name="COUNTRY")
 public class Country implements Serializable {

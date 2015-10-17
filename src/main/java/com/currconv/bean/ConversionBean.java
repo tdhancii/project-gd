@@ -12,24 +12,34 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.annotation.NumberFormat.Style;
 
+/**
+ * Conversion bean to hold the convert screen data.
+ * 
+ * @author gauravD
+ *
+ */
 public class ConversionBean {
-
+    /* Source Amount for conversion */
     @NumberFormat(style = Style.NUMBER)
     @NotNull(message = "Please enter the amount")
     @Type(type = "")
     private BigDecimal sourceAmount;
 
+    /* The converted amount */
     @NumberFormat(style = Style.CURRENCY)
     private BigDecimal convertedAmount;
 
+    /* The date for which currency rates are calculated */
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @NotNull(message = "Please enter the date")
     @Past(message = "Date cannot be in the future")
     private Date conversionDate;
 
+    /* The Source/From Currency for conversion */
     @NotEmpty(message = "Please enter the From currency")
     private String fromCurrency;
 
+    /* The Destionation/To Currency for conversion */
     @NotEmpty(message = "Please enter the To Currency")
     private String toCurrency;
 

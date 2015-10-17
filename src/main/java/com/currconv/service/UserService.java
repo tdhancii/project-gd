@@ -13,6 +13,9 @@ import com.currconv.exception.EmailAlreadyRegisteredException;
 import com.currconv.exception.InvalidUserException;
 
 /**
+ * Interface for the Application User services.
+ * 
+ * @author gauravD
  *
  */
 public interface UserService

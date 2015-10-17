@@ -3,7 +3,7 @@ package com.currconv.dao;
 import com.currconv.entity.User;
 
 /**
- * Database
+ * Interface for Application User data access object
  */
 public interface UserDao 
 {

@@ -30,9 +30,17 @@ import com.currconv.dto.UserDTO;
 import com.currconv.exception.DataException;
 import com.currconv.exception.EmailAlreadyRegisteredException;
 
+/**
+ * This controller serves requests pertaining to the Registration functionality
+ * of the application
+ * 
+ * @author gauravD
+ *
+ */
 @Controller
 @RequestMapping(value = "/userRegister")
 public class RegistrationController {
+    /* Logger to print logging statements */
     Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     @Autowired
@@ -43,21 +51,53 @@ public class RegistrationController {
 
     private static final String REGISTRATION_MESSAGE = "{0} {1} was succesfully registered!";
 
-    // private Map<String, String> countryListMap;
+    private static final String REGISTRATION_BEAN = "registrationBean";
+    private static final String REGISTRATION = "registration";
+    private static final String LOGIN_MESSAGE_ATTRIBUTE = "loginMessage";
+    private static final String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
+    private static final String EMAIL_ALREADY_REGISTERED = "EMAIL_ALREADY_REGISTERED";
+    private static final String COUNTRY_LIST = "countryList";
+    private static final String REDIRECT_LOGIN = "redirect:/login";
+    
+
+    /* List to hold Country values */
     private List<CountryDTO> countryList;
 
+    /**
+     * This method is responsible for displaying the User Registration screen.
+     * 
+     * @param session
+     * @param registrationBean
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView displayRegistration(HttpSession session,@ModelAttribute("registrationBean") RegistrationBean registrationBean) {
-	ModelAndView model = new ModelAndView("registration");
-	model.addObject("registrationBean", registrationBean);
-	
-	session.removeAttribute("loginMessage");
+    public ModelAndView displayRegistration(HttpSession session,
+	    @ModelAttribute(REGISTRATION_BEAN) RegistrationBean registrationBean) {
+	ModelAndView model = new ModelAndView(REGISTRATION);
+	model.addObject(REGISTRATION_BEAN, registrationBean);
+
+	session.removeAttribute(LOGIN_MESSAGE_ATTRIBUTE);
 	return model;
     }
 
+    /**
+     * This method is responsible for registration of the user once all the
+     * relevant details are entered in the User Registration screen. This method
+     * will first check for BindingResult errors, if present, the user would be
+     * navigated to Login screen with relevant message.
+     * 
+     * In case of no binding errors, the user details with an unique emailID
+     * would be saved and navigated to the Login screen. In case the user-email
+     * is already registered, the User will be prompted with a relevant message.
+     * 
+     * @param request
+     * @param registrationBean
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST)
     public String registerUser(HttpServletRequest request,
-	    @Valid @ModelAttribute("registrationBean") RegistrationBean registrationBean, BindingResult bindingResult) {
+	    @Valid @ModelAttribute(REGISTRATION_BEAN) RegistrationBean registrationBean, BindingResult bindingResult) {
 	if (!bindingResult.hasErrors()) {
 	    try {
 		userDelegate.registerNewUser(new UserDTO(registrationBean.getEmailID(), registrationBean.getPassword(),
@@ -68,26 +108,27 @@ public class RegistrationController {
 
 	    } catch (EmailAlreadyRegisteredException e) {
 		logger.error("EmailAlreadyRegisteredException occurred while user registration ->" + e.getMessage());
-		request.setAttribute("errorMessage", "Email is already Registered");
-		return "registration";
-	    } catch (Exception e) {
-		logger.error("System Exception occurred while user registration ->" + e.getMessage());
-		request.setAttribute("errorMessage", "System error has occurred. Please visit us later");
-		return "registration";
+		request.setAttribute(ERROR_MESSAGE_ATTRIBUTE, EMAIL_ALREADY_REGISTERED);
+		return REGISTRATION;
 	    }
-
 	    logger.info("User successfully registered");
 	    String regMessage = MessageFormat.format(REGISTRATION_MESSAGE, registrationBean.getFirstName(),
 		    registrationBean.getLastName());
-	    
-	    request.getSession().setAttribute("loginMessage", regMessage);
-	    return "redirect:/login";
+
+	    request.getSession().setAttribute(LOGIN_MESSAGE_ATTRIBUTE, regMessage);
+	    return REDIRECT_LOGIN;
 	} else {
-	    return "registration";
+	    return REGISTRATION;
 	}
     }
 
-    @ModelAttribute("countryList")
+    /**
+     * This method would enable populating the country values in the User
+     * Registration screen.
+     * 
+     * @return
+     */
+    @ModelAttribute(COUNTRY_LIST)
     public List<CountryDTO> populateCountryList() {
 	try {
 	    if (countryList == null || countryList.isEmpty()) {
@@ -99,6 +140,10 @@ public class RegistrationController {
 	return countryList;
     }
 
+    /**
+     * Used to handle Date data types on the screen.
+     * @param binder
+     */
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
