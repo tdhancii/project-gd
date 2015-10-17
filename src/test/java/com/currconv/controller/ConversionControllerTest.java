@@ -59,32 +59,32 @@ public class ConversionControllerTest {
 
     @Test
     public void loadConvertCurrencyWithoutUserShouldRequestLogin() throws Exception {
-	// Mock the Scenario
+	// Given the Scenario
 	when(request.getSession()).thenReturn(session);
 	when(session.getAttribute(USER_ATTRIBUTE)).thenReturn(null);
 	ModelAndView model = new ModelAndView();
 	ConversionBean conversionBean = new ConversionBean();
 
-	// Invoker Controller
+	// When
 	ModelAndView modelAndView = conversionController.loadConvertCurrency(request, model, conversionBean);
 
-	// Verify results
+	// then
 	assertEquals(modelAndView.getViewName(), LOGIN_REDIRECT);
     }
 
     @Test
     public void loadConvertCurrencyWithUserinSessionShouldLoadPage() throws Exception {
-	// Mock the Scenario
+	// Given the Scenario
 	when(request.getSession()).thenReturn(session);
 	UserDTO user = TestObjectBuilder.fixtureUserDTO();
 	when(session.getAttribute(USER_ATTRIBUTE)).thenReturn(user);
 	ModelAndView model = new ModelAndView();
 	ConversionBean conversionBean = new ConversionBean();
 
-	// Invoker Controller
+	// When
 	ModelAndView modelAndView = conversionController.loadConvertCurrency(request, model, conversionBean);
 
-	// Verify results
+	// then
 	assertTrue(modelAndView.getModel().keySet().contains("conversionBean"));
 	assertTrue(modelAndView.getModel().keySet().contains("userActivityList"));
 
@@ -92,22 +92,22 @@ public class ConversionControllerTest {
 
     @Test
     public void convertCurrencyWithoutUserShouldRedirectToLogin() throws Exception {
-	// Mock the scenario
+	// Given the scenario
 	when(request.getSession()).thenReturn(session);
 	when(session.getAttribute(USER_ATTRIBUTE)).thenReturn(null);
 	ModelAndView model = new ModelAndView();
 	ConversionBean conversionBean = new ConversionBean();
 
-	// Invoke Controller
+	// when
 	ModelAndView modelAndView = conversionController.convertCurrency(request, model, conversionBean, bindingResult);
 
-	// Verify Results
+	// then
 	assertEquals(modelAndView.getViewName(), LOGIN_REDIRECT);
     }
 
     @Test
     public void convertCurrencyretrieveCurrencyFailureShouldFail() throws Throwable {
-	// Mock the Scenario
+	// Given the Scenario
 	when(request.getSession()).thenReturn(session);
 	UserDTO user = TestObjectBuilder.fixtureUserDTO();
 
@@ -119,10 +119,10 @@ public class ConversionControllerTest {
 	when(conversionDelegate.retrieveCurrencyRates(anyString(), anyString(), any(Date.class)))
 		.thenThrow(new RemoteException(ERROR_MESSAGE));
 
-	// Invoke Controller
+	// when
 	conversionController.convertCurrency(request, model, conversionBean, bindingResult);
 
-	// Verify Results
+	// then
 	verify(conversionDelegate, times(1)).retrieveCurrencyRates(anyString(), anyString(), any(Date.class));
     }
 
