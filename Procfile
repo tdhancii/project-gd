@@ -1,1 +1,1 @@
-web: java -jar target/curr-conv-app.war
+web: java $JAVA_OPTS -Dserver.port=$PORT -jar target/curr-conv-app.war
