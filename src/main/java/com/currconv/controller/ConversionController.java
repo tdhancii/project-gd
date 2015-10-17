@@ -38,7 +38,7 @@ import com.currconv.exception.DataException;
 import com.currconv.exception.RemoteException;
 /**
  * The controller which serves requests pertaining to the Currency Conversion screen
- * @author dalalgau
+ * @author gauravD
  *
  */
 @Controller

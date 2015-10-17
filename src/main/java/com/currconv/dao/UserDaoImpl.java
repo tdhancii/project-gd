@@ -14,6 +14,7 @@ import com.currconv.entity.User;
 
 /**
  * Implementation class for Application User data access object
+ * @author gauravD
  */
 @Repository
 @Transactional

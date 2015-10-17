@@ -4,6 +4,7 @@ import com.currconv.entity.User;
 
 /**
  * Interface for Application User data access object
+ * @author gauravD
  */
 public interface UserDao 
 {
